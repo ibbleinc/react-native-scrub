@@ -71,7 +71,7 @@ export function linear(pointsToEvaluate, functionValuesX, functionValuesY) {
   pointsToEvaluate = makeItArrayIfItsNot(pointsToEvaluate);
   pointsToEvaluate.forEach(function(point) {
     var index = findIntervalBorderIndex(point, functionValuesX);
-    if (index == functionValuesX.length - 1) index--;
+    if (index === functionValuesX.length - 1) index--;
     results.push(
       linearInterpolation(
         point,

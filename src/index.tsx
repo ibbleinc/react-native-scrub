@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import {
   StyleSheet,
   View,
@@ -93,9 +93,12 @@ export const Slider: React.FC<Props> = ({
   const minScroll = -(NUMBER_OF_TICKS * spacing);
   const maxScroll = 0;
 
-  const valueToPx = (degrees: number) => {
-    return linear(degrees, [max, min], [minScroll, maxScroll])[0];
-  };
+  const valueToPx = useCallback(
+    (degrees: number) => {
+      return linear(degrees, [max, min], [minScroll, maxScroll])[0];
+    },
+    [max, min, minScroll]
+  );
 
   const [translateX] = useState(() => new Animated.Value(valueToPx(value)));
   const offsetX = useRef(0);
@@ -103,9 +106,10 @@ export const Slider: React.FC<Props> = ({
   useEffect(() => {
     Animated.spring(translateX, {
       toValue: valueToPx(value),
+      useNativeDriver: false,
     }).start();
     offsetX.current = 0;
-  }, [value]);
+  }, [translateX, value, valueToPx]);
 
   const dragXToValue = (x: number) => {
     const value = linear(x, [minScroll, maxScroll], [max, min])[0];
@@ -147,6 +151,7 @@ export const Slider: React.FC<Props> = ({
       Animated.spring(translateX, {
         toValue: valueToPx(activeValue),
         velocity: event.nativeEvent.velocityX,
+        useNativeDriver: false,
       }).start(() => {
         offsetX.current = 0;
       });
